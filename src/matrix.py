@@ -24,29 +24,34 @@ class Matrix:
         if self.m != other.m or self.n != other.n:
             raise ValueError('Matrices don\'t have the same dimensions')
 
-        result = [[0 for i in range(self.n)] for i in range(self.m)]
-        for j in range(self.n):
-            for i in range(self.m):
-                result[i][j] = self[(i, j)] * s
+        result = [[self[(i, j)] + other[(i, j)] for j in range(self.n)] for i in range(self.m)]
+        return Matrix(self.m, self.n, result)
 
     def __mul__(self, other):
         if isinstance(other, numbers.Number):
-            print('number')
             return self.scale(other)
         elif isinstance(other, Matrix):
+            return self.product(other)
             print('matrix')
 
     def __rmul__(self, other):
         if isinstance(other, numbers.Number):
             return self.scale(other)
-            print('number')
 
     def scale(self, s):
-        result = [[0 for i in range(self.n)] for i in range(self.m)]
-        for j in range(self.n):
-            for i in range(self.m):
-                result[i][j] = self[(i, j)] * s
+        result = [[self[(i, j)] * s for j in range(self.n)] for i in range(self.m)]
         return Matrix(self.m, self.n, result)
+
+    def product(self, other):
+        # (AB)_{ij} = \sum_{k}{(A_{ik} B_{kj})}
+        result = [[self.inner(i, j, other) for j in range(self.n)] for i in range(self.m)]
+        return Matrix(self.m, other.n, result)
+
+    def inner(self, row, col, other):
+        sum = 0
+        for k in range(self.n):
+            sum += self[(row, k)] * other[(k, col)]
+        return sum
 
     def __getitem__(self, x):
         return self._matrix[x[0]][x[1]]
@@ -64,11 +69,13 @@ class Matrix:
 
 
 mat = Matrix.identity(3, 3)
-mat2 = Matrix(2, 3, [[11, 12, 13], [21, 22, 23], ])
-print(mat2)
-mat2 = mat2 * 5
-print(mat2)
-print(mat2._matrix)
-print(mat + mat)
+mat2 = Matrix(3, 3, [[11, 12, 13], [21, 22, 23], [31, 32, 33]])
+mat3 = Matrix(3, 3, [[0, 8, -3], [5, -9, 0], [1, 0, 12]])
 
-mat * mat2
+rot_z = Matrix(3, 3, [[0, 1, 0], [-1,0,0], [0,0,1]])
+vec = Matrix(1, 3   , [[0,1,1]])
+
+print(rot_z)
+print(vec)
+
+print(vec *rot_z )
