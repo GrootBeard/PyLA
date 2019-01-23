@@ -1,9 +1,10 @@
 import numbers
+import math
 
 
 class Matrix:
 
-    def __init__(self, m, n, values=None):
+    def __init__(self, m, n, values=None, transpose=False):
         self.m = m
         self.n = n
 
@@ -12,6 +13,12 @@ class Matrix:
         if values:
             self._matrix = values
 
+        if transpose:
+            trans = self.transpose()
+            self.m = trans.m
+            self.n = trans.n
+            self._matrix = trans._matrix
+
     @staticmethod
     def identity(m, n):
         matrix = Matrix(m, n)
@@ -19,6 +26,10 @@ class Matrix:
             matrix[(i, i)] = 1
 
         return matrix
+
+    def transpose(self):
+        result = [[self[(j, i)] for j in range(self.m)] for i in range(self.n)]
+        return Matrix(self.n, self.m, result)
 
     def __add__(self, other):
         if self.m != other.m or self.n != other.n:
@@ -44,7 +55,7 @@ class Matrix:
 
     def product(self, other):
         # (AB)_{ij} = \sum_{k}{(A_{ik} B_{kj})}
-        result = [[self.inner(i, j, other) for j in range(self.n)] for i in range(self.m)]
+        result = [[self.inner(i, j, other) for j in range(other.n)] for i in range(self.m)]
         return Matrix(self.m, other.n, result)
 
     def inner(self, row, col, other):
@@ -72,10 +83,13 @@ mat = Matrix.identity(3, 3)
 mat2 = Matrix(3, 3, [[11, 12, 13], [21, 22, 23], [31, 32, 33]])
 mat3 = Matrix(3, 3, [[0, 8, -3], [5, -9, 0], [1, 0, 12]])
 
-rot_z = Matrix(3, 3, [[0, 1, 0], [-1,0,0], [0,0,1]])
-vec = Matrix(1, 3   , [[0,1,1]])
+z = math.radians(180)
+
+rot_z = Matrix(3, 3, [[math.cos(z), math.sin(z), 0], [-math.sin(z), math.cos(z), 0], [0,0,1]], True)
+rot_y = Matrix(3, 3, [[0, 0, 1], [0,1,0], [-1,0,0]], True)
+vec = Matrix(1, 3, [[1, 0, 0]], True)
 
 print(rot_z)
 print(vec)
 
-print(vec *rot_z )
+print(rot_y * rot_z * vec)
