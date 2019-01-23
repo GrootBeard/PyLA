@@ -78,6 +78,14 @@ class Matrix:
             value += '\n'
         return value
 
+    def det(self):
+        if self.m == self.n == 2:
+            return self[(0,0)] * self[(1,1)] - self[(0, 1)] * self[(1, 0)]
+        if self.m == self.n == 3:
+            return (self[(0,0)] * (self[(1, 1)] * self[(2, 2)] - self[(1, 2)] * self[(2, 1)]) 
+                - self[(0,1)] * (self[(1, 0)] * self[(2, 2)] - self[(1, 2)] * self[(2, 0)]) 
+                   + self[(0,2)] * (self[(1, 0)] * self[(2, 1)] - self[(1, 1)] * self[(2, 0)]))
+
 
 mat = Matrix.identity(3, 3)
 mat2 = Matrix(3, 3, [[11, 12, 13], [21, 22, 23], [31, 32, 33]])
@@ -88,6 +96,8 @@ z = math.radians(180)
 rot_z = Matrix(3, 3, [[math.cos(z), math.sin(z), 0], [-math.sin(z), math.cos(z), 0], [0,0,1]], True)
 rot_y = Matrix(3, 3, [[0, 0, 1], [0,1,0], [-1,0,0]], True)
 vec = Matrix(1, 3, [[1, 0, 0]], True)
+
+print(mat3.det())
 
 print(rot_z)
 print(vec)
